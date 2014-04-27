@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>978</height>
+    <height>1006</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -656,6 +656,13 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkbox_1_EC">
+            <property name="text">
+             <string>Enable Combing</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

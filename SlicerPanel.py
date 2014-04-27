@@ -1,3 +1,26 @@
+#***************************************************************************
+#*                                                                         *
+#*   Copyright (c) 2014                                                    *
+#*   cblt2l <cblt2l@users.sourceforge.net                                  *
+#*                                                                         *
+#*   This program is free software; you can redistribute it and/or modify  *
+#*   it under the terms of the GNU Lesser General Public License (LGPL)    *
+#*   as published by the Free Software Foundation; either version 2 of     *
+#*   the License, or (at your option) any later version.                   *
+#*   for detail see the LICENCE text file.                                 *
+#*                                                                         *
+#*   This program is distributed in the hope that it will be useful,       *
+#*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+#*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+#*   GNU Library General Public License for more details.                  *
+#*                                                                         *
+#*   You should have received a copy of the GNU Library General Public     *
+#*   License along with this program; if not, write to the Free Software   *
+#*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
+#*   USA                                                                   *
+#*                                                                         *
+#***************************************************************************
+
 import FreeCAD, Mesh
 import os,sys,string
 from FreeCAD import Console
@@ -77,6 +100,10 @@ class SlicerPanel:
 		self.initSetting(self.formUi.input_2_ERFR, "retractionSpeed", self._retractionSpeed)
 		self.initSetting(self.formUi.input_3_ERMD, "retractionMinimalDistance", self._retractionMinimalDistance)
 		self.initSetting(self.formUi.input_4_ERME, "minimalExtrusionBeforeRetraction", self._minimalExtrusionBeforeRetraction)
+		if self.Vars.readSetting("enableCombing"):
+			self.formUi.checkbox_1_EC.setChecked(True)
+		else:
+			self.formUi.checkbox_1_EC.setChecked(False)
 		# Set skirt
 		if not self.Vars.readMisc("SKIRTMODE"):
 			self.formUi.Group_2_EnableSkirt.setChecked(False)
@@ -118,6 +145,7 @@ class SlicerPanel:
 		self.formUi.input_1_MinFS.valueChanged.connect(self.formUi.slider_1_MinFS.setValue)
 		self.formUi.input_2_MaxFS.valueChanged.connect(self.formUi.slider_2_MaxFS.setValue)
 		self.formUi.Group_1_EnableExtruderRetract.clicked.connect(self._retractionMode)
+		self.formUi.checkbox_1_EC.clicked.connect(self._enableCombing)
 		self.formUi.Group_2_EnableSkirt.clicked.connect(self._skirtMode)
 		self.formUi.Group_3_EnableSupport.clicked.connect(self._supportMode)
 		self.formUi.radioButton_1_ETB.clicked.connect(self._supportTouchingBed)
@@ -217,7 +245,7 @@ class SlicerPanel:
 			_tmpDic.update(dict.fromkeys(["fanSpeedMin", "fanSpeedMax", "fanFullOnLayerNr"], 0))
 		if not self.Vars.readMisc("RETRACTMODE"):
 			_tmpDic.update(dict.fromkeys(["retractionAmount", "retractionSpeed", "retractionAmountExtruderSwitch", "retractionMinimalDistance",
-										"minimalExtrusionBeforeRetraction"], 0))
+										"minimalExtrusionBeforeRetraction", "enableCombing"], 0))
 		if not self.Vars.readMisc("SKIRTMODE"):
 			_tmpDic.update(dict.fromkeys(["skirtDistance", "skirtLineCount", "skirtMinLength"], 0))
 		if not self.Vars.readMisc("SUPPORTMODE"):
@@ -334,6 +362,12 @@ class SlicerPanel:
 		self.Vars.writeSetting("retractionMinimalDistance", val)
 	def _minimalExtrusionBeforeRetraction(self, val):
 		self.Vars.writeSetting("minimalExtrusionBeforeRetraction", val)
+	def _enableCombing(self):
+		state = self.formUi.checkbox_1_EC.isChecked()
+		if state:
+			self.Vars.writeSetting("enableCombing", 1)
+		else:
+			self.Vars.writeSetting("enableCombing", 0)
 	# Skirt slots
 	def _skirtMode(self):
 		state = self.formUi.Group_2_EnableSkirt.isChecked()
