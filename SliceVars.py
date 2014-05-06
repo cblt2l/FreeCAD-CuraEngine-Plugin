@@ -25,11 +25,16 @@ import FreeCAD, Part
 from FreeCAD import Console
 import os,sys,string
 
+__title__="CuraEngine Slicer Plugin"
+__author__ = "cblt2l"
+__url__ = "http://www.freecadweb.org"
+
 class SliceDef:
 	'''Variables That Describe Machine Parameters'''
 	def __init__(self):
-		# Create a parameter object for the slicer settings
-		#self.grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
+		# Get user's home dir
+		homedir = os.path.expanduser("~")
+		freecaddir = homedir + "/.FreeCAD/"
 
 		# Settings that are not CuraEngine settings. These will be replaced with a GUI at some point
 		self.MiscDict = {}
@@ -40,6 +45,7 @@ class SliceDef:
 		self.MiscDict.update({"POSX":100, "POSY":100, "POSZ":0})
 		self.MiscDict.update({"FANMODE":False, "RETRACTMODE":False, "SKIRTMODE":False, "SUPPORTMODE":False, "RAFTMODE":False})
 		self.MiscDict.update({"InfillDensity":20, "SupportDensity":20})
+		self.MiscDict.update({"SettingsPath":(freecaddir + "CESettings.ces")})
 
 		# Settings that are required by CuraEngine
 		self.settingsDict = {}
@@ -74,43 +80,83 @@ class SliceDef:
 		"G28 X0 Y0                      ;move X/Y to min endstops, so the head is out of the way\n"\
 		"M84                         ;steppers off\n"\
 		"G90                         ;absolute positioning\n"})
+		##################################################################################################
+
+		for key, val in self.MiscDict.items():
+			if not self.checkSetting(key):
+				self.writeMisc(key, val)
+		for key, val in self.settingsDict.items():
+			if not self.checkSetting(key):
+				self.writeSetting(key, val)
+		Console.PrintMessage(key + " is " + str(self.checkSetting(key)) + "\n")
+
+	def getParamType(self, param):
+		if param in ["startCode","endCode","CuraPath","SettingsPath"]:
+			return "string"
+		else:
+			return "float"
+
+	def checkSetting(self, key):
+		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
+		pt = self.getParamType(key)
+		# Check to see if setting has been set in grp
+		if pt is "string":
+			return grp.GetString(key, "~~~~~") != "~~~~~"
+		if pt is "float":
+			return grp.GetFloat(key,-1e200) != -1e200
 
 	def readSetting(self, key):
 		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
-		if key is "startCode" or key is "endCode":
-			val = grp.GetString(key)
-		else:
-			val = grp.GetFloat(key)
-		if not val:
-			return self.settingsDict[key]
-		else:
-			return val
+		pt = self.getParamType(key)
+		if pt is "string":
+			return grp.GetString(key, self.settingsDict[key])
+		elif pt is "float":
+			return grp.GetFloat(key, self.settingsDict[key])
 
 	def writeSetting(self, key, val):
 		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
-		if key is "startCode" or key is "endCode":
+		pt = self.getParamType(key)
+		if pt is "string":
 			grp.SetString(key, val)
-		else:
+		elif pt is "float":
 			grp.SetFloat(key, val)
 		Console.PrintMessage("Setting " + key + " to " + str(val) + '\n')
 
 	def readMisc(self, key):
 		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
-		val = grp.GetFloat(key)
-		if not val:
-			return self.MiscDict[key]
-		else:
-			return val
+		pt = self.getParamType(key)
+		if pt is "string":
+			return grp.GetString(key, self.MiscDict[key])
+		elif pt is "float":
+			return grp.GetFloat(key, self.MiscDict[key])
 
 	def writeMisc(self, key, val):
 		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
-		grp.SetFloat(key, val)
+		pt = self.getParamType(key)
+		if pt is "string":
+			grp.SetString(key, val)
+		elif pt is "float":
+			grp.SetFloat(key, val)
 		Console.PrintMessage("Setting " + key + " to " + str(val) + '\n')
 
-	def exportSettings(self):
+	def copySettings(self):
 		tmpDic = {}
-		
 		for key in self.settingsDict:
 			tmpDic[key] = self.readSetting(key)
-		
 		return tmpDic
+
+	def copyMisc(self):
+		tmpDic = {}
+		for key in self.MiscDict:
+			tmpDic[key] = self.readMisc(key)
+		return tmpDic
+
+	def writeSettingsFile(self, filename):
+		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
+		grp.Export(filename)
+
+
+	def importSettingsFile(self, filename):
+		grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/CuraEngine")
+		grp.Import(filename)
+

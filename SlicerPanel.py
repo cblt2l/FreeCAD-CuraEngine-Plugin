@@ -29,14 +29,11 @@ from PySide.QtGui import QMessageBox
 from subprocess import call
 from math import fabs
 
-# TODO
-# denity = 0 and 100 solid bottom & top layers
-# save settings internally checkbox
-
 if FreeCAD.GuiUp:
 	import FreeCADGui
 	from FreeCADGui import PySideUic as uic
 	from PySide import QtCore, QtGui
+	gui = True
 
 __title__="CuraEngine Slicer Plugin"
 __author__ = "cblt2l"
@@ -58,8 +55,6 @@ class SlicerPanel:
 		self.Vars = SliceDef()
 		
 		# Tab 1
-		#self.initSetting(self.formUi.xxxxx, "", self.xxxx)
-		#self.initMisc(self.formUi.xxxxx, "", self.xxxx)
 		self.formUi.input_1_curapath.setText(self.Vars.readMisc("CuraPath"))
 		self.initMisc(self.formUi.input_1_NOZDIA, "NozzleDiameter", self._nozzleDiameter)
 
@@ -135,9 +130,10 @@ class SlicerPanel:
 
 		#Connect Signals and Slots
 		# Tab 1
-		#self.formUi.xxxxxxx.stateChanged.connect(self.xxxx)
 		self.formUi.button_1_filediag.clicked.connect(self.chooseOutputDir)
 		self.formUi.input_1_curapath.textChanged.connect(self.curaPathChange)
+		self.formUi.button_1_ES.clicked.connect(self.exportSettingsFile)
+		self.formUi.button_2_IS.clicked.connect(self.importSettingsFile)
 		# Tab 2
 		self.formUi.Group_0_EnableFan.clicked.connect(self._fanMode)
 		self.formUi.slider_1_MinFS.valueChanged.connect(self.formUi.input_1_MinFS.setValue)
@@ -198,6 +194,24 @@ class SlicerPanel:
 	def curaPathChange(self, _text):
 		self.Vars.writeMisc("CuraPath", _text)
 
+	def exportSettingsFile(self):
+		sett = self.Vars.readMisc("SettingsPath")
+		fileName, _ = QtGui.QFileDialog.getSaveFileName(None, 'Save Settings File', self.Vars.readMisc("SettingsPath"))
+		if(fileName):
+			self.Vars.writeMisc("SettingsPath", fileName)
+			self.Vars.writeSettingsFile(fileName)
+			Console.PrintMessage("SettingsPath=" + self.Vars.readMisc("SettingsPath") + '\n')
+
+	def importSettingsFile(self):
+		sett= self.Vars.readMisc("SettingsPath")
+		#Console.PrintMessage(sett + '\n')
+		fileName, _ = QtGui.QFileDialog.getOpenFileName(None, 'Select Settings File', sett, "CuraEngine Settings File .ces (*.ces)")
+		Console.PrintMessage(fileName + '\n')
+		if(fileName):
+			self.Vars.writeMisc("SettingsPath", fileName)
+			self.Vars.importSettingsFile(fileName)
+			self.errorBox("Import Complete. Please Restart Macro")
+
 	def errorBox(self, dialogText):
 		msgBox = QMessageBox()
 		msgBox.setText(dialogText)
@@ -234,7 +248,7 @@ class SlicerPanel:
 	def getSettings(self):
 		_cmdList = []
 		#_tmpDic = self.Vars.settingsDict.copy()
-		_tmpDic = self.Vars.exportSettings()
+		_tmpDic = self.Vars.copySettings()
 		# Certain parameters need to be scaled up X1000 when passed to CuraEngine
 		scaleDic = dict.fromkeys(["filamentDiameter", "posx", "posy", "initialLayerThickness", "layerThickness", "extrusionWidth", "skirtDistance", "sparseInfillLineDistance",
 								"supportXYDistance", "supportZDistance", "retractionAmount", "retractionAmountExtruderSwitch", "retractionMinimalDistance", 

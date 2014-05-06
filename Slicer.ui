@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>1006</height>
+    <height>1038</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,6 +55,24 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="HorizontalLayout_1">
+         <item>
+          <widget class="QPushButton" name="button_1_ES">
+           <property name="text">
+            <string>Export Settings</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="button_2_IS">
+           <property name="text">
+            <string>Import Settings</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QGroupBox" name="Group_1_MachineSettings">
