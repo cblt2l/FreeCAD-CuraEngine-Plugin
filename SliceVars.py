@@ -1,7 +1,7 @@
 #***************************************************************************
 #*                                                                         *
 #*   Copyright (c) 2014                                                    *
-#*   cblt2l <cblt2l@users.sourceforge.net                                  *
+#*   cblt2l <cblt2l@users.sourceforge.net>                                 *
 #*                                                                         *
 #*   This program is free software; you can redistribute it and/or modify  *
 #*   it under the terms of the GNU Lesser General Public License (LGPL)    *
@@ -54,7 +54,7 @@ class SliceDef:
 		# Better Way??
 		#self.settingsDict.update({"extrusionWidth": self.MiscDict["NozzleDiameter"]})
 		self.settingsDict.update({"extrusionWidth": .5, "posx": 100, "posy":100, "objectSink": 0})
-		self.settingsDict.update({"printSpeed": 50, "moveSpeed": 200, "infillSpeed": 50, "initialLayerSpeed": 20, "minimalLayerTime":5})
+		self.settingsDict.update({"printSpeed": 50, "moveSpeed": 200, "infillSpeed": 50, "inset0Speed": 50, "insetXSpeed": 50, "initialLayerSpeed": 20, "minimalLayerTime":5})
 		self.settingsDict.update({"fanSpeedMin": 100, "fanSpeedMax": 100, "fanFullOnLayerNr": 2})
 		self.settingsDict.update({"retractionAmount": 4.5, "retractionSpeed": 45, "retractionAmountExtruderSwitch": 14.5, "retractionMinimalDistance": 1.5, 
 									"minimalExtrusionBeforeRetraction": 0.1, "enableCombing": 0})
@@ -88,7 +88,7 @@ class SliceDef:
 		for key, val in self.settingsDict.items():
 			if not self.checkSetting(key):
 				self.writeSetting(key, val)
-		Console.PrintMessage(key + " is " + str(self.checkSetting(key)) + "\n")
+		#Console.PrintMessage(key + " is " + str(self.checkSetting(key)) + "\n")
 
 	def getParamType(self, param):
 		if param in ["startCode","endCode","CuraPath","SettingsPath"]:

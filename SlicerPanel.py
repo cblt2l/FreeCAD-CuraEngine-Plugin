@@ -1,7 +1,7 @@
 #***************************************************************************
 #*                                                                         *
 #*   Copyright (c) 2014                                                    *
-#*   cblt2l <cblt2l@users.sourceforge.net                                  *
+#*   cblt2l <cblt2l@users.sourceforge.net>                                 *
 #*                                                                         *
 #*   This program is free software; you can redistribute it and/or modify  *
 #*   it under the terms of the GNU Lesser General Public License (LGPL)    *
@@ -72,6 +72,10 @@ class SlicerPanel:
 		self.initMisc(self.formUi.input_5_DN, "InfillDensity", self._InfillDensity)
 		self.initSetting(self.formUi.input_6_EF, "filamentFlow", self._filamentFlow)
 		self.initSetting(self.formUi.input_1_LFR, "printSpeed", self._printSpeed)
+		# Set inset speeds here temporarily until added to GUI############################
+		self.Vars.writeSetting("inset0Speed", self.Vars.readSetting("printSpeed"))
+		self.Vars.writeSetting("insetXSpeed", self.Vars.readSetting("printSpeed"))
+		##################################################################################
 		self.initSetting(self.formUi.input_2_RFR, "moveSpeed", self._moveSpeed)
 		self.initSetting(self.formUi.input_3_IFR, "infillSpeed", self._infillSpeed)
 		self.initSetting(self.formUi.input_4_FLFR, "initialLayerSpeed", self._initialLayerSpeed)
@@ -332,6 +336,9 @@ class SlicerPanel:
 	# Feedrate slots
 	def _printSpeed(self, val):
 		self.Vars.writeSetting("printSpeed", val)
+		# Set inset speeds here for now
+		self.Vars.writeSetting("inset0Speed", val)
+		self.Vars.writeSetting("insetXSpeed", val)
 	def _moveSpeed(self, val):
 		self.Vars.writeSetting("moveSpeed", val)
 	def _infillSpeed(self, val):
