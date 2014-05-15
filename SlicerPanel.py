@@ -42,11 +42,11 @@ __url__ = "http://www.freecadweb.org"
 class SlicerPanel:
 	'''Slicer Settings Panel'''
 	def __init__(self):
-		# Get the macro directory. The qt uic form is loaded from here.
-		self.macroDir = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Macro").GetString("MacroPath")
+		# Get the user's home directory.
+		self.homeDir = os.path.expanduser("~")
 
-		# Load the qt uic form. It _must_ be in the macro dir
-		form_class, base_class = uic.loadUiType(self.macroDir + "/Slicer.ui")
+		# Load the qt uic form. It _must_ be in ~/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin, Perhaps there is a better way...
+		form_class, base_class = uic.loadUiType(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/Slicer.ui")
 		self.formUi = form_class()
 		self.form = QtGui.QWidget()
 		self.formUi.setupUi(self.form)
@@ -461,5 +461,5 @@ class SlicerPanel:
 #		App.ActiveDocument.ActiveObject.Placement.Base.y
 
 
-panel=SlicerPanel()
-FreeCADGui.Control.showDialog(panel)
+#panel=SlicerPanel()
+#FreeCADGui.Control.showDialog(panel)

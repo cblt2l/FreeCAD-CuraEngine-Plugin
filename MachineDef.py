@@ -30,6 +30,8 @@ if FreeCAD.GuiUp:
 	from FreeCADGui import PySideUic as uic
 	from PySide import QtCore, QtGui
 
+###MACROPATH#########
+
 # Temporary until settings are integrated properly
 _bedx = 100
 _bedy = 100
@@ -242,11 +244,11 @@ class PrintBedTaskPanel:
 		# temporary settings mechanism
 		global _machinex, _machiney, _machinez, _bedx, _bedy
 
-		# Get the macro directory. The qt uic form is loaded from here.
-		self.macroDir = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Macro").GetString("MacroPath")
+		# Get the user's home directory.
+		self.homeDir = os.path.expanduser("~")
 
-		# Load the qt uic form. It _must_ be in the macro dir
-		form_class, base_class = uic.loadUiType(self.macroDir + "/MachineDef.ui")
+		# Load the qt uic form. It _must_ be in ~/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin, Perhaps there is a better way...
+		form_class, base_class = uic.loadUiType(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/MachineDef.ui")
 		self.formUi = form_class()
 		self.form = QtGui.QWidget()
 		self.formUi.setupUi(self.form)
@@ -301,5 +303,5 @@ class PrintBedTaskPanel:
 
 
 # Run as macro
-panel=PrintBedTaskPanel()
-FreeCADGui.Control.showDialog(panel)
+#panel=PrintBedTaskPanel()
+#FreeCADGui.Control.showDialog(panel)
