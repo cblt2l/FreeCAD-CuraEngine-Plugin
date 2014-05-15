@@ -226,6 +226,7 @@ class SlicerPanel:
 		logFile = _stlParts.replace(".stl", ".log")
 		_cmdList = self.getSettings()
 		_cmdList.insert(0, _curaBin)
+		_cmdList.insert(1, "-v")
 		_cmdList.append("-o")
 		_cmdList.append(gcodeFile)
 		_cmdList.append(_stlParts)
@@ -235,7 +236,7 @@ class SlicerPanel:
 			f.write(index + '\n')
 			Console.PrintMessage(index + '\n')
 		f.write("###############END CURA SETTINGS##############\n")
-		retVal = call(_cmdList, stdout=f)
+		retVal = call(_cmdList, stderr=f)
 		f.close()
 		return retVal
 
