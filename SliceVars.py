@@ -61,6 +61,7 @@ class SliceDef:
 		self.settingsDict.update({"skirtDistance": 6, "skirtLineCount": 1, "skirtMinLength": 0})
 		self.settingsDict.update({"supportAngle": -1, "supportEverywhere": 0,"supportLineDistance": 0, "supportExtruder": -1, "supportXYDistance": 0.7, "supportZDistance": 0.15})
 		self.settingsDict.update({"raftMargin": 5, "raftLineSpacing": 1, "raftBaseThickness": 0, "raftBaseLinewidth": 0, "raftInterfaceThickness": 0, "raftInterfaceLinewidth": 0})
+		self.settingsDict.update({"spiralizeMode":0})
 		self.settingsDict.update({"startCode": \
 		"M109 S{nozzleTemp}     ;Set Nozzle Temp and Wait\n"\
 		"M190 S{bedTemp}      ;Set Bed Temp and Wait\n"\

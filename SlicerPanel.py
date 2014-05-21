@@ -126,6 +126,10 @@ class SlicerPanel:
 		self.initSetting(self.form.input_5_RIT, "raftInterfaceThickness", self._raftInterfaceThickness)
 		self.initSetting(self.form.input_6_RILW, "raftInterfaceLinewidth", self._raftInterfaceLinewidth)
 		# Tab3
+		if self.Vars.readSetting("spiralizeMode"):
+			self.form.checkbox_1_SPI.setChecked(True)
+		else:
+			self.form.checkbox_1_SPI.setChecked(False)
 		self.form.textEdit_startcode.append(self.Vars.readSetting("startCode"))
 		self.form.textEdit_endcode.append(self.Vars.readSetting("endCode"))
 
@@ -149,6 +153,7 @@ class SlicerPanel:
 		self.form.radioButton_2_EE.clicked.connect(self._supportEverywhere)
 		self.form.Group_4_EnableRaft.clicked.connect(self._raftMode)
 		# Tab 3
+		self.form.checkbox_1_SPI.clicked.connect(self._spiralize)
 		self.form.textEdit_startcode.textChanged.connect(self._startCode)
 		self.form.textEdit_endcode.textChanged.connect(self._endCode)
 		##self.update()
@@ -445,6 +450,12 @@ class SlicerPanel:
 	def _raftInterfaceLinewidth(self, val):
 		self.Vars.writeSetting("raftInterfaceLinewidth", val)
 	# Start/end gcode slots
+	def _spiralize(self):
+		state = self.form.checkbox_1_SPI.isChecked()
+		if state:
+			self.Vars.writeSetting("spiralizeMode", 1)
+		else:
+			self.Vars.writeSetting("spiralizeMode", 0)
 	def _startCode(self):
 		#obj = self.sender() <-- Does not work???
 		txt = self.form.textEdit_startcode.toPlainText()

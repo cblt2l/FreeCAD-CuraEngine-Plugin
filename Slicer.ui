@@ -930,6 +930,22 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
+        <widget class="QGroupBox" name="groupBox_misc">
+         <property name="title">
+          <string>Miscellaneous</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <widget class="QCheckBox" name="checkbox_1_SPI">
+            <property name="text">
+             <string>Spiralize</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="groupBox_startcode">
          <property name="title">
           <string>Start Gcode</string>
