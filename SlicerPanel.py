@@ -46,114 +46,111 @@ class SlicerPanel:
 		self.homeDir = os.path.expanduser("~")
 
 		# Load the qt uic form. It _must_ be in ~/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin, Perhaps there is a better way...
-		form_class, base_class = uic.loadUiType(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/Slicer.ui")
-		self.formUi = form_class()
-		self.form = QtGui.QWidget()
-		self.formUi.setupUi(self.form)
+		self.form = uic.loadUi(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/Slicer.ui")
 
 		# Set the Default Values
 		self.Vars = SliceDef()
 		
 		# Tab 1
-		self.formUi.input_1_curapath.setText(self.Vars.readMisc("CuraPath"))
-		self.initMisc(self.formUi.input_1_NOZDIA, "NozzleDiameter", self._nozzleDiameter)
+		self.form.input_1_curapath.setText(self.Vars.readMisc("CuraPath"))
+		self.initMisc(self.form.input_1_NOZDIA, "NozzleDiameter", self._nozzleDiameter)
 
-		self.initSetting(self.formUi.input_2_FILDIA, "filamentDiameter", self._filamentDiameter)
+		self.initSetting(self.form.input_2_FILDIA, "filamentDiameter", self._filamentDiameter)
 
-		self.initSetting(self.formUi.input_3_POSX, "posx", self._posx)
-		self.initSetting(self.formUi.input_4_POSY, "posy", self._posy)
-		self.initSetting(self.formUi.input_5_POSZ, "objectSink", self._objectSink)
+		self.initSetting(self.form.input_3_POSX, "posx", self._posx)
+		self.initSetting(self.form.input_4_POSY, "posy", self._posy)
+		self.initSetting(self.form.input_5_POSZ, "objectSink", self._objectSink)
 
-		self.initSetting(self.formUi.input_0_FLH, "initialLayerThickness", self._initialLayerThickness)
-		self.initSetting(self.formUi.input_1_LH, "layerThickness", self._layerThickness)
-		self.initSetting(self.formUi.input_2_PS, "insetCount", self._insetCount)
-		self.initSetting(self.formUi.input_3_SBL, "downSkinCount", self._downSkinCount)
-		self.initSetting(self.formUi.input_4_STL, "upSkinCount", self._upSkinCount)
-		self.initMisc(self.formUi.input_5_DN, "InfillDensity", self._InfillDensity)
-		self.initSetting(self.formUi.input_6_EF, "filamentFlow", self._filamentFlow)
-		self.initSetting(self.formUi.input_1_LFR, "printSpeed", self._printSpeed)
+		self.initSetting(self.form.input_0_FLH, "initialLayerThickness", self._initialLayerThickness)
+		self.initSetting(self.form.input_1_LH, "layerThickness", self._layerThickness)
+		self.initSetting(self.form.input_2_PS, "insetCount", self._insetCount)
+		self.initSetting(self.form.input_3_SBL, "downSkinCount", self._downSkinCount)
+		self.initSetting(self.form.input_4_STL, "upSkinCount", self._upSkinCount)
+		self.initMisc(self.form.input_5_DN, "InfillDensity", self._InfillDensity)
+		self.initSetting(self.form.input_6_EF, "filamentFlow", self._filamentFlow)
+		self.initSetting(self.form.input_1_LFR, "printSpeed", self._printSpeed)
 		# Set inset speeds here temporarily until added to GUI############################
 		self.Vars.writeSetting("inset0Speed", self.Vars.readSetting("printSpeed"))
 		self.Vars.writeSetting("insetXSpeed", self.Vars.readSetting("printSpeed"))
 		##################################################################################
-		self.initSetting(self.formUi.input_2_RFR, "moveSpeed", self._moveSpeed)
-		self.initSetting(self.formUi.input_3_IFR, "infillSpeed", self._infillSpeed)
-		self.initSetting(self.formUi.input_4_FLFR, "initialLayerSpeed", self._initialLayerSpeed)
-		self.initSetting(self.formUi.input_5_MLT, "minimalLayerTime", self._minimalLayerTime)
+		self.initSetting(self.form.input_2_RFR, "moveSpeed", self._moveSpeed)
+		self.initSetting(self.form.input_3_IFR, "infillSpeed", self._infillSpeed)
+		self.initSetting(self.form.input_4_FLFR, "initialLayerSpeed", self._initialLayerSpeed)
+		self.initSetting(self.form.input_5_MLT, "minimalLayerTime", self._minimalLayerTime)
 
-		self.initMisc(self.formUi.input_1_NT, "NozzleTemp", self._NozzleTemp)
-		self.initMisc(self.formUi.input_2_BT, "BedTemp", self._BedTemp)
+		self.initMisc(self.form.input_1_NT, "NozzleTemp", self._NozzleTemp)
+		self.initMisc(self.form.input_2_BT, "BedTemp", self._BedTemp)
 
 		# Set fan
 		if not self.Vars.readMisc("FANMODE"):
-			self.formUi.Group_0_EnableFan.setChecked(False)
-		self.initSetting(self.formUi.input_1_MinFS, "fanSpeedMin", self._fanSpeedMin)
-		self.initSetting(self.formUi.input_2_MaxFS, "fanSpeedMax", self._fanSpeedMax)
-		self.formUi.slider_1_MinFS.setValue(self.Vars.readSetting("fanSpeedMin"))
-		self.formUi.slider_2_MaxFS.setValue(self.Vars.readSetting("fanSpeedMax"))
-		self.initSetting(self.formUi.input_1_MSAH, "fanFullOnLayerNr", self._fanFullOnLayerNr)
+			self.form.Group_0_EnableFan.setChecked(False)
+		self.initSetting(self.form.input_1_MinFS, "fanSpeedMin", self._fanSpeedMin)
+		self.initSetting(self.form.input_2_MaxFS, "fanSpeedMax", self._fanSpeedMax)
+		self.form.slider_1_MinFS.setValue(self.Vars.readSetting("fanSpeedMin"))
+		self.form.slider_2_MaxFS.setValue(self.Vars.readSetting("fanSpeedMax"))
+		self.initSetting(self.form.input_1_MSAH, "fanFullOnLayerNr", self._fanFullOnLayerNr)
 		# Set retract
 		if not self.Vars.readMisc("RETRACTMODE"):
-			self.formUi.Group_1_EnableExtruderRetract.setChecked(False)
-		self.initSetting(self.formUi.input_1_ERA, "retractionAmount", self._retractionAmount)
-		self.initSetting(self.formUi.input_2_ERFR, "retractionSpeed", self._retractionSpeed)
-		self.initSetting(self.formUi.input_3_ERMD, "retractionMinimalDistance", self._retractionMinimalDistance)
-		self.initSetting(self.formUi.input_4_ERME, "minimalExtrusionBeforeRetraction", self._minimalExtrusionBeforeRetraction)
+			self.form.Group_1_EnableExtruderRetract.setChecked(False)
+		self.initSetting(self.form.input_1_ERA, "retractionAmount", self._retractionAmount)
+		self.initSetting(self.form.input_2_ERFR, "retractionSpeed", self._retractionSpeed)
+		self.initSetting(self.form.input_3_ERMD, "retractionMinimalDistance", self._retractionMinimalDistance)
+		self.initSetting(self.form.input_4_ERME, "minimalExtrusionBeforeRetraction", self._minimalExtrusionBeforeRetraction)
 		if self.Vars.readSetting("enableCombing"):
-			self.formUi.checkbox_1_EC.setChecked(True)
+			self.form.checkbox_1_EC.setChecked(True)
 		else:
-			self.formUi.checkbox_1_EC.setChecked(False)
+			self.form.checkbox_1_EC.setChecked(False)
 		# Set skirt
 		if not self.Vars.readMisc("SKIRTMODE"):
-			self.formUi.Group_2_EnableSkirt.setChecked(False)
-		self.initSetting(self.formUi.input_1_DIST, "skirtDistance", self._skirtDistance)
-		self.initSetting(self.formUi.input_2_LC, "skirtLineCount", self._skirtLineCount)
-		self.initSetting(self.formUi.input_3_ML, "skirtMinLength", self._skirtMinLength)
+			self.form.Group_2_EnableSkirt.setChecked(False)
+		self.initSetting(self.form.input_1_DIST, "skirtDistance", self._skirtDistance)
+		self.initSetting(self.form.input_2_LC, "skirtLineCount", self._skirtLineCount)
+		self.initSetting(self.form.input_3_ML, "skirtMinLength", self._skirtMinLength)
 		# Set support
 		if not self.Vars.readMisc("SUPPORTMODE"):
-			self.formUi.Group_3_EnableSupport.setChecked(False)
+			self.form.Group_3_EnableSupport.setChecked(False)
 		if self.Vars.readSetting("supportEverywhere"):
-			self.formUi.radioButton_2_EE.setChecked(True)
+			self.form.radioButton_2_EE.setChecked(True)
 		else:
-			self.formUi.radioButton_1_ETB.setChecked(True)
-		self.initMisc(self.formUi.input_0_SD, "SupportDensity", self._SupportDensity)
-		self.initSetting(self.formUi.input_1_SXYD, "supportXYDistance", self._supportXYDistance)
-		self.initSetting(self.formUi.input_2_SZD, "supportZDistance", self._supportZDistance)
+			self.form.radioButton_1_ETB.setChecked(True)
+		self.initMisc(self.form.input_0_SD, "SupportDensity", self._SupportDensity)
+		self.initSetting(self.form.input_1_SXYD, "supportXYDistance", self._supportXYDistance)
+		self.initSetting(self.form.input_2_SZD, "supportZDistance", self._supportZDistance)
 		# Set raft
 		if not self.Vars.readMisc("RAFTMODE"):
-			self.formUi.Group_4_EnableRaft.setChecked(False)
-		self.initSetting(self.formUi.input_1_RMG, "raftMargin", self._raftMargin)
-		self.initSetting(self.formUi.input_2_RLS, "raftLineSpacing", self._raftLineSpacing)
-		self.initSetting(self.formUi.input_3_RBT, "raftBaseThickness", self._raftBaseThickness)
-		self.initSetting(self.formUi.input_4_RBLW, "raftBaseLinewidth", self._raftBaseLinewidth)
-		self.initSetting(self.formUi.input_5_RIT, "raftInterfaceThickness", self._raftInterfaceThickness)
-		self.initSetting(self.formUi.input_6_RILW, "raftInterfaceLinewidth", self._raftInterfaceLinewidth)
+			self.form.Group_4_EnableRaft.setChecked(False)
+		self.initSetting(self.form.input_1_RMG, "raftMargin", self._raftMargin)
+		self.initSetting(self.form.input_2_RLS, "raftLineSpacing", self._raftLineSpacing)
+		self.initSetting(self.form.input_3_RBT, "raftBaseThickness", self._raftBaseThickness)
+		self.initSetting(self.form.input_4_RBLW, "raftBaseLinewidth", self._raftBaseLinewidth)
+		self.initSetting(self.form.input_5_RIT, "raftInterfaceThickness", self._raftInterfaceThickness)
+		self.initSetting(self.form.input_6_RILW, "raftInterfaceLinewidth", self._raftInterfaceLinewidth)
 		# Tab3
-		self.formUi.textEdit_startcode.append(self.Vars.readSetting("startCode"))
-		self.formUi.textEdit_endcode.append(self.Vars.readSetting("endCode"))
+		self.form.textEdit_startcode.append(self.Vars.readSetting("startCode"))
+		self.form.textEdit_endcode.append(self.Vars.readSetting("endCode"))
 
 		#Connect Signals and Slots
 		# Tab 1
-		self.formUi.button_1_filediag.clicked.connect(self.chooseOutputDir)
-		self.formUi.input_1_curapath.textChanged.connect(self.curaPathChange)
-		self.formUi.button_1_ES.clicked.connect(self.exportSettingsFile)
-		self.formUi.button_2_IS.clicked.connect(self.importSettingsFile)
+		self.form.button_1_filediag.clicked.connect(self.chooseOutputDir)
+		self.form.input_1_curapath.textChanged.connect(self.curaPathChange)
+		self.form.button_1_ES.clicked.connect(self.exportSettingsFile)
+		self.form.button_2_IS.clicked.connect(self.importSettingsFile)
 		# Tab 2
-		self.formUi.Group_0_EnableFan.clicked.connect(self._fanMode)
-		self.formUi.slider_1_MinFS.valueChanged.connect(self.formUi.input_1_MinFS.setValue)
-		self.formUi.slider_2_MaxFS.valueChanged.connect(self.formUi.input_2_MaxFS.setValue)
-		self.formUi.input_1_MinFS.valueChanged.connect(self.formUi.slider_1_MinFS.setValue)
-		self.formUi.input_2_MaxFS.valueChanged.connect(self.formUi.slider_2_MaxFS.setValue)
-		self.formUi.Group_1_EnableExtruderRetract.clicked.connect(self._retractionMode)
-		self.formUi.checkbox_1_EC.clicked.connect(self._enableCombing)
-		self.formUi.Group_2_EnableSkirt.clicked.connect(self._skirtMode)
-		self.formUi.Group_3_EnableSupport.clicked.connect(self._supportMode)
-		self.formUi.radioButton_1_ETB.clicked.connect(self._supportTouchingBed)
-		self.formUi.radioButton_2_EE.clicked.connect(self._supportEverywhere)
-		self.formUi.Group_4_EnableRaft.clicked.connect(self._raftMode)
+		self.form.Group_0_EnableFan.clicked.connect(self._fanMode)
+		self.form.slider_1_MinFS.valueChanged.connect(self.form.input_1_MinFS.setValue)
+		self.form.slider_2_MaxFS.valueChanged.connect(self.form.input_2_MaxFS.setValue)
+		self.form.input_1_MinFS.valueChanged.connect(self.form.slider_1_MinFS.setValue)
+		self.form.input_2_MaxFS.valueChanged.connect(self.form.slider_2_MaxFS.setValue)
+		self.form.Group_1_EnableExtruderRetract.clicked.connect(self._retractionMode)
+		self.form.checkbox_1_EC.clicked.connect(self._enableCombing)
+		self.form.Group_2_EnableSkirt.clicked.connect(self._skirtMode)
+		self.form.Group_3_EnableSupport.clicked.connect(self._supportMode)
+		self.form.radioButton_1_ETB.clicked.connect(self._supportTouchingBed)
+		self.form.radioButton_2_EE.clicked.connect(self._supportEverywhere)
+		self.form.Group_4_EnableRaft.clicked.connect(self._raftMode)
 		# Tab 3
-		self.formUi.textEdit_startcode.textChanged.connect(self._startCode)
-		self.formUi.textEdit_endcode.textChanged.connect(self._endCode)
+		self.form.textEdit_startcode.textChanged.connect(self._startCode)
+		self.form.textEdit_endcode.textChanged.connect(self._endCode)
 		##self.update()
 
 	def accept(self):
@@ -193,7 +190,7 @@ class SlicerPanel:
 		fileName, _ = QtGui.QFileDialog.getOpenFileName(None, 'Locate CuraEngine', self.Vars.readMisc("CuraPath"))
 		if(fileName):
 			Console.PrintMessage("Filename: " + fileName + '\n')
-			self.formUi.input_1_curapath.setText(fileName)
+			self.form.input_1_curapath.setText(fileName)
 
 	def curaPathChange(self, _text):
 		self.Vars.writeMisc("CuraPath", _text)
@@ -260,7 +257,7 @@ class SlicerPanel:
 								"minimalExtrusionBeforeRetraction", "raftMargin", "raftLineSpacing"], 1000)
 		# Certain parameters are disabled in GUI and need to be set to zero
 		if not self.Vars.readMisc("FANMODE"):
-#		if not self.formUi.Group_0_EnableFan.isChecked():
+#		if not self.form.Group_0_EnableFan.isChecked():
 			_tmpDic.update(dict.fromkeys(["fanSpeedMin", "fanSpeedMax", "fanFullOnLayerNr"], 0))
 		if not self.Vars.readMisc("RETRACTMODE"):
 			_tmpDic.update(dict.fromkeys(["retractionAmount", "retractionSpeed", "retractionAmountExtruderSwitch", "retractionMinimalDistance",
@@ -356,7 +353,7 @@ class SlicerPanel:
 	# Fan slots
 	def _fanMode(self):
 		# https://bugreports.qt-project.org/browse/PYSIDE-104
-		state = self.formUi.Group_0_EnableFan.isChecked()
+		state = self.form.Group_0_EnableFan.isChecked()
 		if state:
 			self.Vars.writeMisc("FANMODE", True)
 		else:
@@ -369,7 +366,7 @@ class SlicerPanel:
 		self.Vars.writeSetting("fanFullOnLayerNr", val)
 	# Retraction slots
 	def _retractionMode(self):
-		state = self.formUi.Group_1_EnableExtruderRetract.isChecked()
+		state = self.form.Group_1_EnableExtruderRetract.isChecked()
 		if state:
 			self.Vars.writeMisc("RETRACTMODE", True)
 		else:
@@ -385,14 +382,14 @@ class SlicerPanel:
 	def _minimalExtrusionBeforeRetraction(self, val):
 		self.Vars.writeSetting("minimalExtrusionBeforeRetraction", val)
 	def _enableCombing(self):
-		state = self.formUi.checkbox_1_EC.isChecked()
+		state = self.form.checkbox_1_EC.isChecked()
 		if state:
 			self.Vars.writeSetting("enableCombing", 1)
 		else:
 			self.Vars.writeSetting("enableCombing", 0)
 	# Skirt slots
 	def _skirtMode(self):
-		state = self.formUi.Group_2_EnableSkirt.isChecked()
+		state = self.form.Group_2_EnableSkirt.isChecked()
 		if state:
 			self.Vars.writeMisc("SKIRTMODE", True)
 		else:
@@ -405,7 +402,7 @@ class SlicerPanel:
 		self.Vars.writeSetting("skirtMinLength", val)
 	# Support slots
 	def _supportMode(self):
-		state = self.formUi.Group_3_EnableSupport.isChecked()
+		state = self.form.Group_3_EnableSupport.isChecked()
 		if state:
 			self.Vars.writeMisc("SUPPORTMODE", True)
 			self.Vars.writeSetting("supportAngle", 60)
@@ -430,7 +427,7 @@ class SlicerPanel:
 		self.Vars.writeSetting("supportZDistance", val)
 	# Raft slots
 	def _raftMode(self):
-		state = self.formUi.Group_4_EnableRaft.isChecked()
+		state = self.form.Group_4_EnableRaft.isChecked()
 		if state:
 			self.Vars.writeMisc("RAFTMODE", True)
 		else:
@@ -450,11 +447,11 @@ class SlicerPanel:
 	# Start/end gcode slots
 	def _startCode(self):
 		#obj = self.sender() <-- Does not work???
-		txt = self.formUi.textEdit_startcode.toPlainText()
+		txt = self.form.textEdit_startcode.toPlainText()
 		self.Vars.writeSetting("startCode", txt)
 	def _endCode(self):
 		#obj = self.sender() <-- Does not work???
-		txt = self.formUi.textEdit_endcode.toPlainText()
+		txt = self.form.textEdit_endcode.toPlainText()
 		self.Vars.writeSetting("endCode", txt)
 #	def _setXYPos(self):
 #		global cmdList

@@ -30,8 +30,6 @@ if FreeCAD.GuiUp:
 	from FreeCADGui import PySideUic as uic
 	from PySide import QtCore, QtGui
 
-###MACROPATH#########
-
 # Temporary until settings are integrated properly
 _bedx = 100
 _bedy = 100
@@ -248,22 +246,19 @@ class PrintBedTaskPanel:
 		self.homeDir = os.path.expanduser("~")
 
 		# Load the qt uic form. It _must_ be in ~/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin, Perhaps there is a better way...
-		form_class, base_class = uic.loadUiType(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/MachineDef.ui")
-		self.formUi = form_class()
-		self.form = QtGui.QWidget()
-		self.formUi.setupUi(self.form)
+		self.form = uic.loadUi(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/MachineDef.ui")
 
-		self.formUi.spinBox_1.setValue(_machinex)
-		self.formUi.spinBox_2.setValue(_machiney)
-		self.formUi.spinBox_3.setValue(_machinez)
-		self.formUi.spinBox_4.setValue(_bedx)
-		self.formUi.spinBox_5.setValue(_bedy)
+		self.form.spinBox_1.setValue(_machinex)
+		self.form.spinBox_2.setValue(_machiney)
+		self.form.spinBox_3.setValue(_machinez)
+		self.form.spinBox_4.setValue(_bedx)
+		self.form.spinBox_5.setValue(_bedy)
 
-		self.formUi.spinBox_1.valueChanged.connect(self._machineXStroke)
-		self.formUi.spinBox_2.valueChanged.connect(self._machineYStroke)
-		self.formUi.spinBox_3.valueChanged.connect(self._machineZStroke)
-		self.formUi.spinBox_4.valueChanged.connect(self._bedXSize)
-		self.formUi.spinBox_5.valueChanged.connect(self._bedYSize)
+		self.form.spinBox_1.valueChanged.connect(self._machineXStroke)
+		self.form.spinBox_2.valueChanged.connect(self._machineYStroke)
+		self.form.spinBox_3.valueChanged.connect(self._machineZStroke)
+		self.form.spinBox_4.valueChanged.connect(self._bedXSize)
+		self.form.spinBox_5.valueChanged.connect(self._bedYSize)
 
 	def accept(self):
 		makePrintBedGrp()
