@@ -47,6 +47,7 @@ class createMachineDef:
 	"Create a 3D Printer Definition"
 	def Activated(self):
 		import MachineDef
+		reload(MachineDef)
 		panel = MachineDef.PrintBedTaskPanel()
 		FreeCADGui.Control.showDialog(panel)
 		Console.PrintMessage("Activated Machine Definition Command \n")
@@ -58,6 +59,7 @@ class sliceCuraEngine:
 	"Run the CuraEngine Slicer Tool"
 	def Activated(self):
 		import SlicerPanel
+		reload(SlicerPanel)
 		panel = SlicerPanel.SlicerPanel()
 		FreeCADGui.Control.showDialog(panel)
 		Console.PrintMessage("Activated CuraEngine Tool \n")
