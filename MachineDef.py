@@ -30,12 +30,8 @@ if FreeCAD.GuiUp:
 	from FreeCADGui import PySideUic as uic
 	from PySide import QtCore, QtGui
 
-# Temporary until settings are integrated properly
-_bedx = 100
-_bedy = 100
-_machinex = 100
-_machiney = 100
-_machinez = 100
+# Default Values
+defaultVals = {"bedx":100, "bedy":100, "machinex":100, "machiney":100, "machinez":100}
 #-------------------------------------------------
 
 def makePrintBedGrp():
@@ -43,6 +39,7 @@ def makePrintBedGrp():
 	grp = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroup","PrintBedGroup")
 	PrintBedGroup(grp)
 	FreeCADGui.activeDocument().activeView().viewAxometric()
+	FreeCADGui.SendMsgToActiveView("ViewFit")
 #	PrintBed(obj)
 #	ViewProviderPrintBed(obj.ViewObject)
 
@@ -68,10 +65,8 @@ class PrintBedGroup:
 class PrintBed:
 	'The PrintBed Object'
 	def __init__(self, obj):
-		global _bedx, _bedy
-		FreeCAD.Console.PrintMessage("Change Bed X: " + str(_bedx) + "\n")
-		obj.addProperty("App::PropertyDistance", "XSize", "PrintBed", "The X Dimension of the Bed").XSize=_bedx
-		obj.addProperty("App::PropertyDistance", "YSize", "PrintBed", "The Y Dimension of the Bed").YSize=_bedy
+		obj.addProperty("App::PropertyDistance", "XSize", "PrintBed", "The X Dimension of the Bed").XSize=readSetting("bedx")
+		obj.addProperty("App::PropertyDistance", "YSize", "PrintBed", "The Y Dimension of the Bed").YSize=readSetting("bedy")
 		obj.Proxy = self
 		self.Type = "PrintBed"
 
@@ -122,7 +117,6 @@ class ViewProviderPrintBed:
 		self.data.width = x
 		self.data.height = y
 		self.data.depth = z
-		
 		pass
 
 	def getDisplayModes(self,obj):
@@ -158,11 +152,9 @@ class ViewProviderPrintBed:
 class PrintVolume:
 	'The StrokeLimit Object'
 	def __init__(self, obj):
-		global _machinex, _machiney, _machinez
-		
-		obj.addProperty("App::PropertyDistance", "XStroke", "Machine", "The X Axis Stroke").XStroke=_machinex
-		obj.addProperty("App::PropertyDistance", "YStroke", "Machine", "The Y Axis Stroke").YStroke=_machiney
-		obj.addProperty("App::PropertyDistance", "ZStroke", "Machine", "The Z Axis Stroke").ZStroke=_machinez
+		obj.addProperty("App::PropertyDistance", "XStroke", "Machine", "The X Axis Stroke").XStroke=readSetting("machinex")
+		obj.addProperty("App::PropertyDistance", "YStroke", "Machine", "The Y Axis Stroke").YStroke=readSetting("machiney")
+		obj.addProperty("App::PropertyDistance", "ZStroke", "Machine", "The Z Axis Stroke").ZStroke=readSetting("machinez")
 		obj.Proxy = self
 		self.Type = "Machine"
 
@@ -239,26 +231,23 @@ class ViewProviderPrintVolume:
 
 class PrintBedTaskPanel:
 	def __init__(self):
-		# temporary settings mechanism
-		global _machinex, _machiney, _machinez, _bedx, _bedy
-
 		# Get the user's home directory.
 		self.homeDir = os.path.expanduser("~")
 
 		# Load the qt uic form. It _must_ be in ~/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin, Perhaps there is a better way...
 		self.form = uic.loadUi(self.homeDir + "/.FreeCAD/Mod/FreeCAD-CuraEngine-Plugin/MachineDef.ui")
 
-		self.form.spinBox_1.setValue(_machinex)
-		self.form.spinBox_2.setValue(_machiney)
-		self.form.spinBox_3.setValue(_machinez)
-		self.form.spinBox_4.setValue(_bedx)
-		self.form.spinBox_5.setValue(_bedy)
+		self.form.doubleSpinBox_1.setValue(readSetting("machinex"))
+		self.form.doubleSpinBox_2.setValue(readSetting("machiney"))
+		self.form.doubleSpinBox_3.setValue(readSetting("machinez"))
+		self.form.doubleSpinBox_4.setValue(readSetting("bedx"))
+		self.form.doubleSpinBox_5.setValue(readSetting("bedy"))
 
-		self.form.spinBox_1.valueChanged.connect(self._machineXStroke)
-		self.form.spinBox_2.valueChanged.connect(self._machineYStroke)
-		self.form.spinBox_3.valueChanged.connect(self._machineZStroke)
-		self.form.spinBox_4.valueChanged.connect(self._bedXSize)
-		self.form.spinBox_5.valueChanged.connect(self._bedYSize)
+		self.form.doubleSpinBox_1.valueChanged.connect(self._machineXStroke)
+		self.form.doubleSpinBox_2.valueChanged.connect(self._machineYStroke)
+		self.form.doubleSpinBox_3.valueChanged.connect(self._machineZStroke)
+		self.form.doubleSpinBox_4.valueChanged.connect(self._bedXSize)
+		self.form.doubleSpinBox_5.valueChanged.connect(self._bedYSize)
 
 	def accept(self):
 		makePrintBedGrp()
@@ -271,31 +260,31 @@ class PrintBedTaskPanel:
 		return int(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
 
 	def _machineXStroke(self, val):
-		global _machinex
-		_machinex = val
-		FreeCAD.Console.PrintMessage("Change Machine X: " + str(val) + "\n")
+		writeSetting("machinex", val)
 
 	def _machineYStroke(self, val):
-		global _machiney
-		_machiney = val
-		FreeCAD.Console.PrintMessage("Change Machine Y: " + str(val) + "\n")
+		writeSetting("machiney", val)
 
 	def _machineZStroke(self, val):
-		global _machinez
-		_machinez = val
-		FreeCAD.Console.PrintMessage("Change Machine Y: " + str(val) + "\n")
+		writeSetting("machinez", val)
 
 	def _bedXSize(self, val):
-		global _bedx
-		_bedx = val
-		FreeCAD.Console.PrintMessage("Change Bed X: " + str(val) + "\n")
+		writeSetting("bedx", val)
 
 	def _bedYSize(self, val):
-		global _bedy
-		_bedy = val
-		FreeCAD.Console.PrintMessage("Change Bed Y: " + str(val) + "\n")
+		writeSetting("bedy", val)
 
+def readSetting(key):
+	global defaultVals
+	grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/3DPrinting/MachineDef")
+	val = grp.GetFloat(key, defaultVals[key])
+	FreeCAD.Console.PrintMessage("Reading Key: " + key + " Value: " + str(val) + "\n")
+	return val
 
+def writeSetting(key, val):
+	grp = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/3DPrinting/MachineDef")
+	FreeCAD.Console.PrintMessage("Setting " + key + " to " + str(val) + '\n')
+	grp.SetFloat(key, val)
 
 # Run as macro
 #panel=PrintBedTaskPanel()
