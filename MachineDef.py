@@ -31,7 +31,7 @@ if FreeCAD.GuiUp:
 	from PySide import QtCore, QtGui
 
 # Default Values
-defaultVals = {"bedx":100, "bedy":100, "machinex":100, "machiney":100, "machinez":100}
+defaultVals = {"machinex":100, "machiney":100, "machinez":100, "offsetx":20, "offsety":20, "bedx":100, "bedy":100}
 #-------------------------------------------------
 
 def makePrintBedGrp():
@@ -67,6 +67,8 @@ class PrintBed:
 	def __init__(self, obj):
 		obj.addProperty("App::PropertyDistance", "XSize", "PrintBed", "The X Dimension of the Bed").XSize=readSetting("bedx")
 		obj.addProperty("App::PropertyDistance", "YSize", "PrintBed", "The Y Dimension of the Bed").YSize=readSetting("bedy")
+		obj.addProperty("App::PropertyDistance", "XOffset", "PrintBed", "The X Offset of the Bed").XOffset=readSetting("offsetx")
+		obj.addProperty("App::PropertyDistance", "YOffset", "PrintBed", "The Y Offset of the Bed").YOffset=readSetting("offsety")
 		obj.Proxy = self
 		self.Type = "PrintBed"
 
@@ -113,10 +115,14 @@ class ViewProviderPrintBed:
 		x = fp.getPropertyByName("XSize").Value
 		y = fp.getPropertyByName("YSize").Value
 		z = 1.0
+		ox = fp.getPropertyByName("XOffset").Value
+		oy = fp.getPropertyByName("YOffset").Value
 		# Set the size of the PrintBed
 		self.data.width = x
 		self.data.height = y
 		self.data.depth = z
+		# Translate the printbed to proper location
+		self.trans.translation.setValue([(x/2)+ox, (y/2)+oy, -0.5])
 		pass
 
 	def getDisplayModes(self,obj):
@@ -178,6 +184,7 @@ class ViewProviderPrintVolume:
 		self.trans = coin.SoTranslation()
 
 		self.data=coin.SoCube()
+		# Switch Z to proper default value
 		self.trans.translation.setValue([0,0,100])
 		self.wireframe.addChild(self.trans)
 		style=coin.SoDrawStyle()
@@ -194,7 +201,8 @@ class ViewProviderPrintVolume:
 		x = fp.getPropertyByName("XStroke").Value
 		y = fp.getPropertyByName("YStroke").Value
 		z = fp.getPropertyByName("ZStroke").Value
-		self.trans.translation.setValue([0,0,z/2])
+		# Translate box to keep corner at (0,0)
+		self.trans.translation.setValue([x/2 ,y/2 , z/2])
 		self.data.width = x
 		self.data.height = y
 		self.data.depth = z
@@ -240,12 +248,16 @@ class PrintBedTaskPanel:
 		self.form.doubleSpinBox_1.setValue(readSetting("machinex"))
 		self.form.doubleSpinBox_2.setValue(readSetting("machiney"))
 		self.form.doubleSpinBox_3.setValue(readSetting("machinez"))
+		self.form.doubleSpinBox_6.setValue(readSetting("offsetx"))
+		self.form.doubleSpinBox_7.setValue(readSetting("offsety"))
 		self.form.doubleSpinBox_4.setValue(readSetting("bedx"))
 		self.form.doubleSpinBox_5.setValue(readSetting("bedy"))
 
 		self.form.doubleSpinBox_1.valueChanged.connect(self._machineXStroke)
 		self.form.doubleSpinBox_2.valueChanged.connect(self._machineYStroke)
 		self.form.doubleSpinBox_3.valueChanged.connect(self._machineZStroke)
+		self.form.doubleSpinBox_6.valueChanged.connect(self._bedXOffset)
+		self.form.doubleSpinBox_7.valueChanged.connect(self._bedYOffset)
 		self.form.doubleSpinBox_4.valueChanged.connect(self._bedXSize)
 		self.form.doubleSpinBox_5.valueChanged.connect(self._bedYSize)
 
@@ -267,6 +279,12 @@ class PrintBedTaskPanel:
 
 	def _machineZStroke(self, val):
 		writeSetting("machinez", val)
+
+	def _bedXOffset(self, val):
+		writeSetting("offsetx", val)
+
+	def _bedYOffset(self, val):
+		writeSetting("offsety", val)
 
 	def _bedXSize(self, val):
 		writeSetting("bedx", val)
