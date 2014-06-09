@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>1038</height>
+    <height>1187</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -113,72 +113,6 @@
              <widget class="QLabel" name="label_2_FILDIA">
               <property name="text">
                <string>Filament Diameter</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QDoubleSpinBox" name="input_3_POSX">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <double>999.990000000000009</double>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="label_3_POSX">
-              <property name="text">
-               <string>Part X Position</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QDoubleSpinBox" name="input_4_POSY">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <double>999.990000000000009</double>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLabel" name="label_4_POSY">
-              <property name="text">
-               <string>Part Y Position</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QDoubleSpinBox" name="input_5_POSZ">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>-99.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>0.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>0.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLabel" name="label_5_POSZ">
-              <property name="text">
-               <string>Part Z Sink</string>
               </property>
              </widget>
             </item>
@@ -479,6 +413,22 @@
              </widget>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="Group_5_MISC">
+         <property name="title">
+          <string>Miscellaneous</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_17">
+          <item>
+           <widget class="QCheckBox" name="checkbox_1_SPI">
+            <property name="text">
+             <string>Spiralize</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -910,6 +860,79 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="Group_5_OPP">
+         <property name="title">
+          <string>Override Part Positions</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_18">
+          <item>
+           <layout class="QFormLayout" name="Form_5_OPP">
+            <item row="0" column="0">
+             <widget class="QDoubleSpinBox" name="input_1_POSX">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="maximum">
+               <double>999.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_1_POSX">
+              <property name="text">
+               <string>Part X Position</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QDoubleSpinBox" name="input_2_POSY">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="maximum">
+               <double>999.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_2_POSY">
+              <property name="text">
+               <string>Part Y Position</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QDoubleSpinBox" name="input_3_POSZ">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>-999.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_3_POSZ">
+              <property name="text">
+               <string>Part Z Sink</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -929,22 +952,6 @@
        <string>Start/End</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
-       <item>
-        <widget class="QGroupBox" name="groupBox_misc">
-         <property name="title">
-          <string>Miscellaneous</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_15">
-          <item>
-           <widget class="QCheckBox" name="checkbox_1_SPI">
-            <property name="text">
-             <string>Spiralize</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item>
         <widget class="QGroupBox" name="groupBox_startcode">
          <property name="title">

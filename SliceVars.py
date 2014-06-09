@@ -43,7 +43,7 @@ class SliceDef:
 		self.MiscDict.update({"NozzleDiameter":0.5})
 		self.MiscDict.update({"CuraPath":"/usr/share/cura/CuraEngine"})
 		self.MiscDict.update({"POSX":100, "POSY":100, "POSZ":0})
-		self.MiscDict.update({"FANMODE":False, "RETRACTMODE":False, "SKIRTMODE":False, "SUPPORTMODE":False, "RAFTMODE":False})
+		self.MiscDict.update({"OPPMODE":False, "FANMODE":False, "RETRACTMODE":False, "SKIRTMODE":False, "SUPPORTMODE":False, "RAFTMODE":False})
 		self.MiscDict.update({"InfillDensity":20, "SupportDensity":20})
 		self.MiscDict.update({"SettingsPath":(freecaddir + "CESettings.ces")})
 

@@ -57,9 +57,11 @@ class SlicerPanel:
 
 		self.initSetting(self.form.input_2_FILDIA, "filamentDiameter", self._filamentDiameter)
 
-		self.initSetting(self.form.input_3_POSX, "posx", self._posx)
-		self.initSetting(self.form.input_4_POSY, "posy", self._posy)
-		self.initSetting(self.form.input_5_POSZ, "objectSink", self._objectSink)
+		if not self.Vars.readMisc("OPPMODE"):
+			self.form.Group_5_OPP.setChecked(False)
+		self.initSetting(self.form.input_1_POSX, "posx", self._posx)
+		self.initSetting(self.form.input_2_POSY, "posy", self._posy)
+		self.initSetting(self.form.input_3_POSZ, "objectSink", self._objectSink)
 
 		self.initSetting(self.form.input_0_FLH, "initialLayerThickness", self._initialLayerThickness)
 		self.initSetting(self.form.input_1_LH, "layerThickness", self._layerThickness)
@@ -152,6 +154,7 @@ class SlicerPanel:
 		self.form.radioButton_1_ETB.clicked.connect(self._supportTouchingBed)
 		self.form.radioButton_2_EE.clicked.connect(self._supportEverywhere)
 		self.form.Group_4_EnableRaft.clicked.connect(self._raftMode)
+		self.form.Group_5_OPP.clicked.connect(self._oppMode)
 		# Tab 3
 		self.form.checkbox_1_SPI.clicked.connect(self._spiralize)
 		self.form.textEdit_startcode.textChanged.connect(self._startCode)
@@ -174,6 +177,8 @@ class SlicerPanel:
 			return False
 		stlParts = docDir + docName + ".stl"
 		Mesh.export(partList, stlParts)
+		self.pos = self.GetXYZPos(partList)
+		#Console.PrintMessage(str(self.pos) + '\n')
 		retVal = self.sliceParts(self.Vars.readMisc("CuraPath"), stlParts)
 		if retVal is True:
 			self.errorBox("Slice Failed!\n Check log file\n" + logFile)
@@ -223,6 +228,27 @@ class SlicerPanel:
 		msgBox.setText(dialogText)
 		msgBox.exec_()
 
+	def GetXYZPos(self, partsList):
+		if len(partsList) is 1:
+			bb = partsList[0].Shape.BoundBox
+		else:
+			# Create a temporary fusion of the selected parts and get
+			# the bounding box to determine the center coordinates
+			f = FreeCAD.activeDocument().addObject("Part::MultiFuse","Fusion")
+			f.Shapes = partsList
+			# Must recompute first to get correct boundbox
+			FreeCAD.ActiveDocument.recompute()
+			bb = f.Shape.BoundBox
+			# Delete the temp fusion
+			FreeCAD.ActiveDocument.removeObject(f.Name)
+		c = bb.Center
+		# We want the Minimum Z height. Anything below 0 is translated to "objectSink" setting
+		c.z = bb.ZMin
+		#Unhide all of the selected parts that were hidden when making the fusion
+		for p in partsList:
+			p.ViewObject.Visibility=True
+		return c
+
 	def sliceParts(self, _curaBin, _stlParts):
 		gcodeFile = _stlParts.replace(".stl", ".gcode")
 		logFile = _stlParts.replace(".stl", ".log")
@@ -254,15 +280,15 @@ class SlicerPanel:
 
 	def getSettings(self):
 		_cmdList = []
-		#_tmpDic = self.Vars.settingsDict.copy()
 		_tmpDic = self.Vars.copySettings()
+
 		# Certain parameters need to be scaled up X1000 when passed to CuraEngine
 		scaleDic = dict.fromkeys(["filamentDiameter", "posx", "posy", "initialLayerThickness", "layerThickness", "extrusionWidth", "skirtDistance", "sparseInfillLineDistance",
 								"supportXYDistance", "supportZDistance", "retractionAmount", "retractionAmountExtruderSwitch", "retractionMinimalDistance", 
 								"minimalExtrusionBeforeRetraction", "raftMargin", "raftLineSpacing"], 1000)
+
 		# Certain parameters are disabled in GUI and need to be set to zero
 		if not self.Vars.readMisc("FANMODE"):
-#		if not self.form.Group_0_EnableFan.isChecked():
 			_tmpDic.update(dict.fromkeys(["fanSpeedMin", "fanSpeedMax", "fanFullOnLayerNr"], 0))
 		if not self.Vars.readMisc("RETRACTMODE"):
 			_tmpDic.update(dict.fromkeys(["retractionAmount", "retractionSpeed", "retractionAmountExtruderSwitch", "retractionMinimalDistance",
@@ -274,15 +300,20 @@ class SlicerPanel:
 		if not self.Vars.readMisc("RAFTMODE"):
 			_tmpDic.update(dict.fromkeys(["raftMargin", "raftLineSpacing", "raftBaseThickness", "raftBaseLinewidth",
 										 "raftInterfaceThickness", "raftInterfaceLinewidth"], 0))
+
 		# Add the Nozzle & Bed temps to the startcode. Idealy this should be done at postprocessing stage
 		startcode = _tmpDic["startCode"]
 		startcode = startcode.replace("{nozzleTemp}", str(self.Vars.readMisc("NozzleTemp")))
 		startcode = startcode.replace("{bedTemp}", str(self.Vars.readMisc("BedTemp")))
 		_tmpDic["startCode"] = startcode
 
+		# Set the part placement
+		if not self.Vars.readMisc("OPPMODE"):
+			_tmpDic["posx"] = self.pos.x
+			_tmpDic["posy"] = self.pos.y
+			_tmpDic["objectSink"] = self.pos.z
+
 		for key, val in _tmpDic.items():
-		#for key in _tmpDic:
-			#val = self.Vars.readSetting(key)
 			mult = scaleDic.get(key)
 			if not mult:
 				mult = 1
@@ -308,12 +339,6 @@ class SlicerPanel:
 	def _nozzleDiameter(self, val):
 		self.Vars.writeMisc("NozzleDiameter", val)
 		self._setLineDistance("extrusionWidth", val)
-	def _posx(self, val):
-		self.Vars.writeSetting("posx", val)
-	def _posy(self, val):
-		self.Vars.writeSetting("posy", val)
-	def _objectSink(self, val):
-		self.Vars.writeSetting("objectSink", fabs(val))
 	def _filamentDiameter(self, val):
 		self.Vars.writeSetting("filamentDiameter", val)
 	def _initialLayerThickness(self, val):
@@ -449,6 +474,19 @@ class SlicerPanel:
 		self.Vars.writeSetting("raftInterfaceThickness", val)
 	def _raftInterfaceLinewidth(self, val):
 		self.Vars.writeSetting("raftInterfaceLinewidth", val)
+	# Override Part Position slots
+	def _oppMode(self):
+		state = self.form.Group_5_OPP.isChecked()
+		if state:
+			self.Vars.writeMisc("OPPMODE", True)
+		else:
+			self.Vars.writeMisc("OPPMODE", False)
+	def _posx(self, val):
+		self.Vars.writeSetting("posx", val)
+	def _posy(self, val):
+		self.Vars.writeSetting("posy", val)
+	def _objectSink(self, val):
+		self.Vars.writeSetting("objectSink", fabs(val))
 	# Start/end gcode slots
 	def _spiralize(self):
 		state = self.form.checkbox_1_SPI.isChecked()
